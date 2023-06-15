@@ -32,6 +32,7 @@ class UserSeeder extends Seeder
 
          Permission::create(['name' => 'checkout order']);
          Permission::create(['name' => 'index order']);
+         Permission::create(['name' => 'myOrder order']);
  
          //create roles and assign existing permissions
          $userRole = Role::create(['name' => 'user']);
@@ -39,6 +40,7 @@ class UserSeeder extends Seeder
          $userRole->givePermissionTo('listCart cart');
          $userRole->givePermissionTo('addToCart cart');
          $userRole->givePermissionTo('checkout order');
+         $userRole->givePermissionTo('myOrder order');
  
          $adminRole = Role::create(['name' => 'admin']);
          $adminRole->givePermissionTo('index product');

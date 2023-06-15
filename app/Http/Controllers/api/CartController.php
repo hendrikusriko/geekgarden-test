@@ -8,11 +8,12 @@ use Illuminate\Support\Facades\Validator;
 use App\models\Cart;
 use App\models\User;
 use App\models\Product;
+use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
     public function addToCart(Request $request) {
-        $userId = 1;
+        $userId = Auth::id();
         $validator = Validator::make($request->all(), [
             'product_id' => 'required|exists:product,id'
         ]);
@@ -37,7 +38,7 @@ class CartController extends Controller
     }
 
     public function listCart() {
-        $userId = 1;
+        $userId = Auth::id();
         $data = Cart::with(['product'])->where('user_id', $userId)->get();
         if ($data) {
             foreach ($data as $value) {

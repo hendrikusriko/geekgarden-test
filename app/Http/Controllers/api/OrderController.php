@@ -8,11 +8,21 @@ use Illuminate\Support\Facades\DB;
 use App\models\Cart;
 use App\models\Order;
 use App\models\OrderDetail;
+use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
+
+    public function index() {
+        $data = Order::get();
+        if ($data) {
+            return response()->json(["success" => true,"data" => $data]);
+        }
+        return response()->json(["error" => true,"message" => "Order not found"]);
+    }
+
     public function checkout() {
-        $userId = 1;
+        $userId = Auth::id();
         $checkCart = Cart::where('user_id', $userId)->with(['product'])->get();
         $totalPrice = 0;
         do {
@@ -30,7 +40,6 @@ class OrderController extends Controller
                 'total_price' => $totalPrice,
                 'order_status' => 'pending'
             ];
-    
             
             DB::transaction(function () use($userId, $invoice, $orderCreate, $checkCart) {
                 $order = Order::create($orderCreate);
@@ -49,5 +58,14 @@ class OrderController extends Controller
             return response()->json(["error" => true,"message" => "Cart is empty"]);
         }
 
+    }
+
+    public function myOrder() {
+        $userId = Auth::id();
+        $data = Order::where('user_id', $userId)->get();
+        if ($data) {
+            return response()->json(["success" => true,"data" => $data]);
+        }
+        return response()->json(["error" => true,"message" => "Order not found"]);
     }
 }

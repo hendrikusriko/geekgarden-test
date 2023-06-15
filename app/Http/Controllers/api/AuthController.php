@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Validator;
+use Spatie\Permission\Models\Role;
 
 class AuthController extends Controller
 {
@@ -24,7 +25,27 @@ class AuthController extends Controller
         } 
     }
 
-    public function coba() {
-        
+    public function register(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required',
+            'password_confirm' => 'required|same:password',
+        ]);
+   
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+   
+        $dataCreate = User::create([
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+            'password' => bcrypt($request->input('password')),
+        ]);
+
+        $dataCreate->assignRole('user');
+   
+        return response()->json(["success" => true,"message" => 'Your account has successfully created']);
     }
 }
